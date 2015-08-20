@@ -34,7 +34,7 @@ local tinsert, tconcat = table.insert, table.concat
 local error, assert = error, assert
 
 -- WoW APIs
-local Ambiguate = Ambiguate
+-- local Ambiguate = Ambiguate
 
 -- Global vars/functions that we don't upvalue since they might get hooked, or upgraded
 -- List them here for Mikk's FindGlobals script
@@ -242,7 +242,7 @@ AceComm.callbacks.OnUnused = nil
 
 local function OnEvent(self, event, prefix, message, distribution, sender)
 	if event == "CHAT_MSG_ADDON" then
-		sender = Ambiguate(sender, "none")
+		--sender = Ambiguate(sender, "none")
 		local control, rest = match(message, "^([\001-\009])(.*)")
 		if control then
 			if control==MSG_MULTI_FIRST then

@@ -1,4 +1,4 @@
-﻿-- ------------------------------------------------------------------------------ --
+-- ------------------------------------------------------------------------------ --
 --                            TradeSkillMaster_Crafting                           --
 --            http://www.curse.com/addons/wow/tradeskillmaster_crafting           --
 --                                                                                --
@@ -106,7 +106,7 @@ function TSM:RegisterModule()
 	TSM.slashCommands = {
 		{ key = "profession", label = L["Opens the Crafting window to the first profession."], callback = "CraftingGUI:OpenFirstProfession" },
 	}
-	TSM.sync = { callback = "Sync:Callback" }
+	--TSM.sync = { callback = "Sync:Callback" }
 	TSMAPI:NewModule(TSM)
 end
 

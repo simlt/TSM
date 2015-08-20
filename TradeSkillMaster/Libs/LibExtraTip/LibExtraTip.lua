@@ -997,7 +997,8 @@ function lib:GenerateTooltipMethodTable() -- Sets up hooks to give the quantity 
 			OnTooltipCleared(self)
 			local reg = tooltipRegistry[self]
 			reg.ignoreOnCleared = true
-			local _,_,q,_,cu,_,_,minb,inc,bo,ba,hb,own = GetAuctionItemInfo(type,index)
+			--local _,_,q,_,cu,_,_,minb,inc,bo,ba,hb,own = GetAuctionItemInfo(type,index)
+			local _,_,q,_,cu,_,minb,inc,bo,ba,hb,own = GetAuctionItemInfo(type,index)
 			reg.quantity = q
 			reg.additional.event = "SetAuctionItem"
 			reg.additional.eventType = type

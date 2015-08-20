@@ -16,6 +16,57 @@ local private = {}
 private.gather = {}
 private.shown = {}
 
+-- Introduced in 4.0.1 http://wowwiki.wikia.com/wiki/API_GetProfessionInfo
+-- returns name, icon, skillLevel, maxSkillLevel, numAbilities, spelloffset, skillLine, skillModifier, specializationIndex, specializationOffset
+-- we need ONLY skillName, _, level, maxLevel
+-- id argument can be:  "tradeSkill1", "tradeSkill2", "cook", "firstAid"
+local function GetProfessionInfo(id)
+	-- store primary profession names
+	local primary = {}
+	local cooking = {}
+	local firstAid = {}
+	-- find which primary professions we have
+	for i = 1, GetNumSkillLines() do
+		if GetSkillLineInfo(i) == "Professions" then
+			i = i+1 -- skip header
+			while select(2, GetSkillLineInfo(i)) ~= 1 do
+				local name, _, _, skillRank, _, _, skillMaxRank = GetSkillLineInfo(i)
+				table.insert(primary, {name=name, skillRank=skillRank, skillMaxRank=skillMaxRank})
+				i = i+1
+			end
+		elseif GetSkillLineInfo(i) == "Secondary Skills" then
+			i = i+1 -- skip header
+			while select(2, GetSkillLineInfo(i)) ~= 1 do
+				local name, _, _, skillRank, _, _, skillMaxRank = GetSkillLineInfo(i)
+				if name == "Cooking" then
+					table.insert(cooking, {name=name, skillRank=skillRank, skillMaxRank=skillMaxRank})
+				elseif name == "First Aid" then
+					table.insert(firstAid, {name=name, skillRank=skillRank, skillMaxRank=skillMaxRank})
+				end
+				i = i+1
+			end
+		end
+	end
+	--local spell, profession = GetSpellLink(primary[1])
+	local profession
+	if id == "tradeSkill1" then
+		profession = primary[1]
+	elseif id == "tradeSkill2" then
+		profession = primary[2]
+	elseif id == "cook" then
+		profession = cooking
+	elseif id == "firstAid" then
+		profession = firstAid
+	else
+		error("Invalid GetProfessionInfo id")
+		return nil
+	end
+	if profession == nil then
+    return nil
+  end
+	return profession.name, nil, profession.skillRank, profession.skillMaxRank
+end
+
 
 function GUI:OnEnable()
 	GUI:RegisterEvent("TRADE_SKILL_SHOW", "ShowProfessionWindow")
@@ -78,7 +129,7 @@ end
 
 function GUI:ShowProfessionWindow()
 	if not TradeSkillFrame then return TSMAPI:CreateTimeDelay("craftingShowProfessionDelay", 0, GUI.ShowProfessionWindow) end
-	if GetTradeSkillLine() == GetSpellInfo(53428) or IsTradeSkillGuild() then
+	if GetTradeSkillLine() == GetSpellInfo(53428) then
 		-- runeforging or guild profession
 		if GUI.frame then
 			GUI.noClose = true
@@ -213,28 +264,29 @@ function GUI:UpdateTradeSkills()
 	local playerName = UnitName("player")
 	if not playerName then return end
 	TSM.db.factionrealm.tradeSkills[playerName] = TSM.db.factionrealm.tradeSkills[playerName] or {}
-	SpellBook_UpdateProfTab()
+	-- SpellBook_UpdateProfTab()
 
-	local tradeSkill1, tradeSkill2, _, _, cook, firstAid = GetProfessions()
-	local btns = { PrimaryProfession1SpellButtonBottom, PrimaryProfession2SpellButtonBottom, SecondaryProfession3SpellButtonRight, SecondaryProfession4SpellButtonRight }
+	--local tradeSkill1, tradeSkill2, _, _, cook, firstAid = GetProfessions()
+	--local btns = { PrimaryProfession1SpellButtonBottom, PrimaryProfession2SpellButtonBottom, SecondaryProfession3SpellButtonRight, SecondaryProfession4SpellButtonRight }
 	local old = TSM.db.factionrealm.tradeSkills[playerName]
 	TSM.db.factionrealm.tradeSkills[playerName] = {}
-	for i, id in pairs({ tradeSkill1, tradeSkill2, cook, firstAid }) do -- needs to be pairs since may not be continuous indices
-		if not btns[i]:GetParent().missingHeader:IsVisible() then
-			local skillName, _, level, maxLevel = GetProfessionInfo(id)
+	for i, id in pairs({ "tradeSkill1", "tradeSkill2", "cook", "firstAid" }) do -- needs to be pairs since may not be continuous indices
+		--if not btns[i]:GetParent().missingHeader:IsVisible() then
+		local skillName, _, level, maxLevel = GetProfessionInfo(id)
+		if skillName ~= nil then
 			TSM.db.factionrealm.tradeSkills[playerName][skillName] = old[skillName] or {}
 			TSM.db.factionrealm.tradeSkills[playerName][skillName].level = level
 			TSM.db.factionrealm.tradeSkills[playerName][skillName].maxLevel = maxLevel
 			TSM.db.factionrealm.tradeSkills[playerName][skillName].isSecondary = (i > 2) and true
 
-			local spellBookSlot = btns[i]:GetID() + btns[i]:GetParent().spellOffset
-			local _, link = GetSpellLink(spellBookSlot, BOOKTYPE_PROFESSION)
+			--local spellBookSlot = btns[i]:GetID() + btns[i]:GetParent().spellOffset
+			local _, link = GetSpellLink(skillName)
 			if link then
 				TSM.db.factionrealm.tradeSkills[playerName][skillName].link = link
 				if skillName == GetTradeSkillLine() and i <= 2 and not TSM.isSyncing then
 					TSM.db.factionrealm.tradeSkills[playerName][skillName].account = nil
-					TSM.db.factionrealm.tradeSkills[playerName][skillName].accountKey = TSMAPI.Sync:GetAccountKey()
-					TSM.Sync:BroadcastTradeSkillData()
+					--TSM.db.factionrealm.tradeSkills[playerName][skillName].accountKey = TSMAPI.Sync:GetAccountKey()
+					--TSM.Sync:BroadcastTradeSkillData()
 				end
 			end
 		end
@@ -308,7 +360,8 @@ end
 function GUI:ClearFilters()
 	-- close the dropdown and uncheck the buttons
 	CloseDropDownMenus()
-	local id = TradeSkillLinkDropDown:GetID()
+	--local id = TradeSkillLinkDropDown:GetID()
+	local id = 1
 	local skillupButton = _G["DropDownList" .. id .. "Button1"]
 	local makeableButton = _G["DropDownList" .. id .. "Button2"]
 	if skillupButton and skillupButton.checked and skillupButton.value == CRAFT_IS_MAKEABLE then
@@ -320,7 +373,7 @@ function GUI:ClearFilters()
 	TradeSkillOnlyShowMakeable(false)
 	TradeSkillOnlyShowSkillUps(false)
 	TradeSkillFrame_Update()
-	TradeSkillSetFilter(-1, -1)
+	--TradeSkillSetFilter(-1, -1)
 	SetTradeSkillItemNameFilter("")
 	for i = 1, GetNumTradeSkills() do
 		local _, t, _, e = GetTradeSkillInfo(i)
@@ -648,7 +701,7 @@ function GUI:CreateNavFrame(frame)
 	title:SetFont(TSMAPI.Design:GetContentFont(), 18)
 	TSMAPI.Design:SetWidgetLabelColor(title)
 	title:SetPoint("TOP", frame, 0, -3)
-	local version = TSM._version
+	local version = "v2.5"
 	if strfind(version, "@") then version = "Dev" end
 	title:SetText(format("TSM_Crafting - %s", version))
 
@@ -1331,7 +1384,8 @@ function GUI:UpdateProfessionsTabST()
 	local numAvailableAllCache = {}
 	local inventoryTotals = select(4, TSM.Inventory:GetTotals())
 	for i = 1, GetNumTradeSkills() do
-		local skillName, skillType, numAvailable, isExpanded, _, numSkillUps, _, showProgressBar, currentRank, maxRank = GetTradeSkillInfo(i)
+		-- local skillName, skillType, numAvailable, isExpanded, _, numSkillUps, _, showProgressBar, currentRank, maxRank = GetTradeSkillInfo(i)
+		local skillName, skillType, numAvailable, isExpanded, _ = GetTradeSkillInfo(i)
 		if skillName then
 			local spellID = TSM.Util:GetSpellID(i)
 			local key = skillName .. i
@@ -1341,15 +1395,7 @@ function GUI:UpdateProfessionsTabST()
 				ts = "  "
 			end
 			if skillType == "header" or skillType == "subheader" then
-				if showProgressBar then
-					skillName = skillName .. " (" .. currentRank .. "/" .. maxRank .. ") " .. (isExpanded and " [-]" or " [+]")
-				else
 					skillName = skillName .. (isExpanded and " [-]" or " [+]")
-				end
-			end
-
-			if numSkillUps > 1 and skillType == "optimal" then
-				skillName = skillName .. " <" .. numSkillUps .. ">"
 			end
 
 			if not numAvailableAllCache[spellID] then

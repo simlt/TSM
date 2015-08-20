@@ -110,15 +110,12 @@ function Modules:ValidateModuleObject(obj)
 		local val = obj[fieldInfo.key]
 		if val then
 			-- make sure it's of the correct type
-			print(val)
 			if type(val) ~= fieldInfo.type then
 				return format("For field '%s', expected type of %s, got %s.", fieldInfo.key, fieldInfo.type, type(val))
 			end
 			-- if there's required subfields, check them
 			if fieldInfo.subFieldInfo then
 				for key, valType in pairs(fieldInfo.subFieldInfo) do
-					print(val[key])
-					print(valType)
 					if valType == "function" then
 						val[key] = Modules:GetFunction(obj, val[key])
 					end
@@ -158,6 +155,7 @@ function TSMAPI:NewModule(obj)
 		errMsg = Modules:ValidateModuleObject(obj)
 	end
 	if errMsg then
+		print(errMsg)
 		error(errMsg, 2)
 	end
 	

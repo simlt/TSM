@@ -54,7 +54,8 @@ function Scan.ProcessGetAllScan(self)
 		end
 		
 		local itemID = TSMAPI:GetItemID(GetAuctionItemLink("list", i))
-		local _, _, count, _, _, _, _, _, _, buyout = GetAuctionItemInfo("list", i)
+		--local _, _, count, _, _, _, _, _, _, buyout = GetAuctionItemInfo("list", i)
+		local _, _, count, _, _, _, _, _, buyout = GetAuctionItemInfo("list", i)
 		if itemID and buyout and buyout > 0 then
 			data[itemID] = data[itemID] or {records={}, minBuyout=math.huge, quantity=0}
 			data[itemID].minBuyout = min(data[itemID].minBuyout, buyout)

@@ -123,7 +123,8 @@ local function AuctionDataIsBad(temp, resolveSeller)
 	for i=1, shown do
 		-- checks to make sure all the data has been sent to the client
 		-- if not, the data is bad and we'll wait / try again
-		local count, _, _, _, _, _, _, buyout, _, _, seller = select(3, GetAuctionItemInfo("list", i))
+		--local count, _, _, _, _, _, _, buyout, _, _, seller = select(3, GetAuctionItemInfo("list", i))
+		local count, _, _, _, _, _, buyout, _, _, seller = select(3, GetAuctionItemInfo("list", i))
 		local itemString = GetItemString(GetAuctionItemLink("list", i))
 		temp[i] = {itemString=itemString, index=i}
 		if not (itemString and buyout and count and (seller or not resolveSeller)) then
@@ -244,7 +245,8 @@ do
 		
 		local numLinks, prevLink = 0, nil
 		for i=1, GetNumAuctionItems("list") do
-			local _, _, count, _, _, _, _, minBid, minInc, buyout, bid, _, seller = GetAuctionItemInfo("list", i)
+			--local _, _, count, _, _, _, _, minBid, minInc, buyout, bid, _, seller = GetAuctionItemInfo("list", i)
+			local _, _, count, _, _, _, minBid, minInc, buyout, bid, _, seller = GetAuctionItemInfo("list", i)
 			local link = GetAuctionItemLink("list", i)
 			local temp = private.pageTemp[i]
 			
@@ -274,7 +276,8 @@ do
 		for i=1, shown do
 			-- checks to make sure all the data has been sent to the client
 			-- if not, the data is bad and we'll wait / try again
-			local _, _, count, _, _, _, _, minBid, minInc, buyout, bid, _, seller = GetAuctionItemInfo("list", i)
+			--local _, _, count, _, _, _, _, minBid, minInc, buyout, bid, _, seller = GetAuctionItemInfo("list", i)
+			local _, _, count, _, _, _, minBid, minInc, buyout, bid, _, seller = GetAuctionItemInfo("list", i)
 			local link = GetAuctionItemLink("list", i)
 			
 			private.pageTemp[i] = {count=count, minBid=minBid, minInc=minInc, buyout=buyout, bid=bid, seller=seller, link=link}
@@ -495,7 +498,8 @@ do
 
 	-- Add a new record to the status.data table
 	function private:AddAuctionRecord(index)
-		local name, texture, count, _, _, _, _, minBid, minIncrement, buyout, bid, highBidder, seller = GetAuctionItemInfo("list", index)
+		--local name, texture, count, _, _, _, _, minBid, minIncrement, buyout, bid, highBidder, seller = GetAuctionItemInfo("list", index)
+		local name, texture, count, _, _, _, minBid, minIncrement, buyout, bid, highBidder, seller = GetAuctionItemInfo("list", index)
 		local timeLeft = GetAuctionItemTimeLeft("list", index)
 		local link = GetAuctionItemLink("list", index)
 		local itemString = GetItemString(link)
@@ -561,7 +565,8 @@ do
 			-- get data for at most 200 auctions per update to avoid excessive lag
 			for i=1, 200 do
 				local link = GetAuctionItemLink("list", self.num)
-				local _, _, quantity, _, _, _, _, _, _, buyout = GetAuctionItemInfo("list", self.num)
+				--local _, _, quantity, _, _, _, _, _, _, buyout = GetAuctionItemInfo("list", self.num)
+				local _, _, quantity, _, _, _, _, _, buyout = GetAuctionItemInfo("list", self.num)
 				if self.tries == 0 or (link and quantity and buyout) then
 					self.num = self.num + 1
 					self.tries = 3
@@ -757,10 +762,12 @@ do
 	local function IsTargetAuction(index)
 		local itemID = Get
 		local itemString = GetItemString(GetAuctionItemLink("list", index))
-		local _, _, count, _, _, _, _, minBid, bidIncrement, buyout, bidAmount, _, seller, _, itemID = GetAuctionItemInfo("list", index)
+		--local _, _, count, _, _, _, _, minBid, bidIncrement, buyout, bidAmount, _, seller, _, itemID = GetAuctionItemInfo("list", index)
+		local _, _, count, _, _, _, minBid, bidIncrement, buyout, bidAmount, _, seller = GetAuctionItemInfo("list", index)
 		local bid = bidAmount == 0 and minBid or bidAmount
 		local info = status.targetInfo
 		if type(info.itemString) == "number" then
+  		local _, itemID = strsplit(":", itemString)
 			itemString = itemID
 		end
 		

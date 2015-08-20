@@ -1,4 +1,4 @@
-﻿-- ------------------------------------------------------------------------------ --
+-- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
 --                http://www.curse.com/addons/wow/tradeskill-master               --
 --                                                                                --
@@ -705,6 +705,8 @@ end
 
 function TSM:GetAuctionPlayer(player, player_full)
 	local realm = GetRealmName() or ""
+	-- for some strange reason on private server player's name may be nil
+	player = player or "none"
 	if player_full and strjoin("-", player, realm) ~= player_full then
 		return player_full
 	else

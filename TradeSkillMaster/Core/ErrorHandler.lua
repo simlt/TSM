@@ -296,6 +296,14 @@ local function TSMErrorHandler(msg)
 		TSM:Print(L["Additional error suppressed"])
 		isErrorFrameVisible = 1
 	end
+	
+	--[[print(string.sub(errorMessage, 0, 255*1))
+	print(string.sub(errorMessage, 255*1+1, 255*2))
+  print(string.sub(errorMessage, 255*2+1, 255*3))
+  print(string.sub(errorMessage, 255*3+1, 255*4))
+  print(string.sub(errorMessage, 255*4+1, 255*5))
+  print(string.sub(errorMessage, 255*5+1, 255*6))
+  --]]
 
 	-- need to clear the stack
 	tsmStack = {}
@@ -309,13 +317,14 @@ function TSMAPI:Assert(cond, err)
 	isAssert = false
 end
 
+-- [[
 do
 	origErrorHandler = geterrorhandler()
 	local errHandlerFrame = CreateFrame("Frame", nil, nil, "TSMErrorHandlerTemplate")
 	errHandlerFrame.errorHandler = TSMErrorHandler
 	errHandlerFrame.origErrorHandler = origErrorHandler
 	seterrorhandler(errHandlerFrame.handler)
-end
+end -- ]]
 
 --[===[@debug@ 
 --- Disables TSM's error handler until the game is reloaded.
