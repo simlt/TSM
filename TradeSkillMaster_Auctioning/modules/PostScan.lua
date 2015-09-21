@@ -418,7 +418,7 @@ function Post:UpdateItem()
 end
 
 function Post:DoAction()
-	timeout.timeLeft = 5
+	timeout.timeLeft = 0.1
 	timeout:Show()
 	if not AuctionFrameAuctions.duration then
 		-- Fix in case Blizzard_AuctionUI hasn't set this value yet (which could cause an error)

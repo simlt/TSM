@@ -124,7 +124,7 @@ function private:CreateSearchBar(parent)
 	end
 	
 	local function OnUpdate(self)
-		if self:IsEnabled() and not TSMAPI:AHTabIsVisible("Shopping") then
+		if TSMAPI:AHTabIsVisible("Shopping") then
 			self:ClearFocus()
 		end
 	end
@@ -268,13 +268,13 @@ function private:CreateSearchBar(parent)
 		self.isDisabled = true
 		self.editBox:ClearFocus()
 		self.editBox:HighlightText(0, 0)
-		self.editBox:Disable()
+		--self.editBox:Disable()
 		self.button:Disable()
 		self.stop:Enable()
 	end
 	searchBarFrame.Enable = function(self)
 		self.isDisabled = nil
-		self.editBox:Enable()
+		--self.editBox:Enable()
 		self.button:Enable()
 		self.stop:Disable()
 	end

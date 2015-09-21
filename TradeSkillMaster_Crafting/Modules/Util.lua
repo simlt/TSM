@@ -9,7 +9,8 @@
 -- load the parent file (TSM) into a local variable and register this file as a module
 local TSM = select(2, ...)
 local Util = TSM:NewModule("Util")
-local VELLUM_ID = "item:38682:0:0:0:0:0:0"
+local ARMOR_VELLUM_III_ID = "item:43145:0:0:0:0:0:0"
+local WEAPON_VELLUM_III_ID = "item:43146:0:0:0:0:0:0"
 
 local scanTooltip
 function GetTradeSkillReagentItemLink(skillIndex, reagentLink)
@@ -104,10 +105,10 @@ function Util:ScanCurrentProfession()
 				local hasCD = select(2, GetTradeSkillCooldown(index)) and true or nil
 				local mats = {}
 				if currentTradeSkill == TSM.enchantingName and strfind(itemLink, "enchant:") then
-					mats[VELLUM_ID] = 1
-					local name = TSMAPI:GetSafeItemInfo(VELLUM_ID) or (GetLocale() == "enUS" and "Enchanting Vellum") or nil
-					TSM.db.factionrealm.mats[VELLUM_ID] = TSM.db.factionrealm.mats[VELLUM_ID] or {}
-					TSM.db.factionrealm.mats[VELLUM_ID].name = TSM.db.factionrealm.mats[VELLUM_ID].name or name
+					mats[ARMOR_VELLUM_III_ID] = 1
+					local name = TSMAPI:GetSafeItemInfo(ARMOR_VELLUM_III_ID) or (GetLocale() == "enUS" and "Enchanting Vellum") or nil
+					TSM.db.factionrealm.mats[ARMOR_VELLUM_III_ID] = TSM.db.factionrealm.mats[ARMOR_VELLUM_III_ID] or {}
+					TSM.db.factionrealm.mats[ARMOR_VELLUM_III_ID].name = TSM.db.factionrealm.mats[ARMOR_VELLUM_III_ID].name or name
 					numMade = 1
 				end
 				
@@ -228,10 +229,10 @@ function Util.ScanSyncedProfessionThread(self)
 				local hasCD = select(2, GetTradeSkillCooldown(index)) and true or nil
 				local mats = {}
 				if currentTradeSkill == TSM.enchantingName and strfind(itemLink, "enchant:") then
-					mats[VELLUM_ID] = 1
-					local name = TSMAPI:GetSafeItemInfo(VELLUM_ID) or (GetLocale() == "enUS" and "Enchanting Vellum") or nil
-					TSM.db.factionrealm.mats[VELLUM_ID] = TSM.db.factionrealm.mats[VELLUM_ID] or {}
-					TSM.db.factionrealm.mats[VELLUM_ID].name = TSM.db.factionrealm.mats[VELLUM_ID].name or name
+					mats[ARMOR_VELLUM_III_ID] = 1
+					local name = TSMAPI:GetSafeItemInfo(ARMOR_VELLUM_III_ID) or (GetLocale() == "enUS" and "Enchanting Vellum") or nil
+					TSM.db.factionrealm.mats[ARMOR_VELLUM_III_ID] = TSM.db.factionrealm.mats[ARMOR_VELLUM_III_ID] or {}
+					TSM.db.factionrealm.mats[ARMOR_VELLUM_III_ID].name = TSM.db.factionrealm.mats[ARMOR_VELLUM_III_ID].name or name
 					numMade = 1
 				end
 				

@@ -405,7 +405,7 @@ function GUI:ShowSwitchButton()
 			self:Show()
 			if TSM.db.global.showingDefaultFrame then
 				self:SetParent(TradeSkillFrame)
-				self:SetPoint("TOPLEFT", 55, -3)
+				self:SetPoint("TOPLEFT", 70, -15)
 				self:SetWidth(60)
 				self:SetHeight(18)
 				self:SetText(TSMAPI.Design:GetInlineColor("link") .. "TSM|r")
@@ -880,7 +880,7 @@ function GUI:CreateProfessionsTab(parent)
 
 	local searchBar = TSMAPI.GUI:CreateInputBox(frame, "TSMCraftingSearchBar")
 	searchBar:SetPoint("TOPLEFT", 5, -35)
-	searchBar:SetWidth(240)
+	searchBar:SetWidth(200)
 	searchBar:SetHeight(24)
 	searchBar:SetText(SEARCH)
 	searchBar:SetTextColor(1, 1, 1, 0.5)
@@ -914,11 +914,19 @@ function GUI:CreateProfessionsTab(parent)
 
 	local btn = TSMAPI.GUI:CreateButton(frame, 14, "TSMCraftingFilterButton")
 	btn:SetPoint("TOPLEFT", frame.clearFilterBtn, "TOPRIGHT", 5, 0)
-	btn:SetPoint("TOPRIGHT", -5, -35)
+	btn:SetWidth(80)
 	btn:SetHeight(24)
-	btn:SetText(L["Filters >>"])
-	btn:SetScript("OnClick", function(self) ToggleDropDownMenu(1, nil, TradeSkillFilterDropDown, "TSMCraftingFilterButton", btn:GetWidth(), 0) end)
+	btn:SetText("SubClass >>")
+	btn:SetScript("OnClick", function(self) ToggleDropDownMenu(1, nil, TradeSkillSubClassDropDown, "TSMCraftingFilter2Button", btn:GetWidth()-15, 0) end)
 	frame.filterBtn = btn
+	
+	local btn = TSMAPI.GUI:CreateButton(frame, 14, "TSMCraftingFilter2Button")
+  btn:SetPoint("TOPLEFT", frame.filterBtn, "TOPRIGHT", 5, 0)
+  btn:SetPoint("TOPRIGHT", -5, -35)
+  btn:SetHeight(24)
+  btn:SetText("InvSlot >>")
+  btn:SetScript("OnClick", function(self) ToggleDropDownMenu(1, nil, TradeSkillInvSlotDropDown, "TSMCraftingFilter2Button", btn:GetWidth(), 0) end)
+  frame.filter2Btn = btn
 
 	TSMAPI.GUI:CreateHorizontalLine(frame, -64)
 
@@ -1283,7 +1291,8 @@ function GUI:CreateCraftInfoFrame(parent)
 
 		if altVerb == ENSCRIBE then
 			createAllBtn:SetText(L["Enchant Vellum"])
-			createAllBtn.vellum = TSMAPI:GetSafeItemInfo("item:38682:0:0:0:0:0:0")
+			-- Armor Vellum III
+			createAllBtn.vellum = TSMAPI:GetSafeItemInfo("item:43145:0:0:0:0:0:0")
 		else
 			createAllBtn:SetText(CREATE_ALL)
 			createAllBtn.vellum = nil
@@ -1556,9 +1565,10 @@ function GUI:UpdateQueue()
 						end
 
 						local velName
-						local VELLUM_ID = "item:38682:0:0:0:0:0:0"
-						if TSM.db.factionrealm.crafts[spellID].mats[VELLUM_ID] then
-							velName = GetItemInfo(VELLUM_ID) or TSM.db.factionrealm.mats[VELLUM_ID].name
+						-- Armor Vellum III
+						local ARMOR_VELLUM_III_ID = "item:43145:0:0:0:0:0:0"
+						if TSM.db.factionrealm.crafts[spellID].mats[ARMOR_VELLUM_III_ID] then
+							velName = GetItemInfo(ARMOR_VELLUM_III_ID) or TSM.db.factionrealm.mats[ARMOR_VELLUM_III_ID].name
 						end
 
 						local color
@@ -1758,6 +1768,7 @@ function GUI:CreatePromptFrame(parent)
 	noBtn:SetText(L["No Thanks"])
 	noBtn:SetScript("OnClick", function()
 		TSM.db.factionrealm.tradeSkills[UnitName("player")][frame.profession].prompted = true
+		TSM:Printf(L["No thanks for %s. Prompted: %b"], frame.profession, TSM.db.factionrealm.tradeSkills[UnitName("player")][frame.profession].prompted)
 		frame:Hide()
 	end)
 	frame.noBtn = noBtn

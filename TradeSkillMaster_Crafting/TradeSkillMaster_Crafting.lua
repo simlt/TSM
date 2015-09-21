@@ -58,17 +58,17 @@ function TSM:OnEnable()
 	-- fix vellum issue
 	for spellid, data in pairs(TSM.db.factionrealm.crafts) do
 		for itemString in pairs(data.mats) do
-			if itemString == "item:38682" then
-				TSM.db.factionrealm.crafts[spellid].mats["item:38682:0:0:0:0:0:0"] = 1
+			if itemString == "item:43145" then
+				TSM.db.factionrealm.crafts[spellid].mats["item:43145:0:0:0:0:0:0"] = 1
 				TSM.db.factionrealm.crafts[spellid].mats[itemString] = nil
 			end
 		end
 	end
-	if TSM.db.factionrealm.mats["item:38682"] then
-		local name = TSMAPI:GetSafeItemInfo("item:38682:0:0:0:0:0:0") or (GetLocale() == "enUS" and "Enchanting Vellum") or nil
-		TSM.db.factionrealm.mats["item:38682:0:0:0:0:0:0"] = {}
-		TSM.db.factionrealm.mats["item:38682:0:0:0:0:0:0"].name = name
-		TSM.db.factionrealm.mats["item:38682"] = nil
+	if TSM.db.factionrealm.mats["item:43145"] then
+		local name = TSMAPI:GetSafeItemInfo("item:43145:0:0:0:0:0:0") or (GetLocale() == "enUS" and "Enchanting Vellum") or nil
+		TSM.db.factionrealm.mats["item:43145:0:0:0:0:0:0"] = {}
+		TSM.db.factionrealm.mats["item:43145:0:0:0:0:0:0"].name = name
+		TSM.db.factionrealm.mats["item:43145"] = nil
 	end
 	
 	local func, err = TSMAPI:ParseCustomPrice(TSM.db.global.defaultCraftPriceMethod, "crafting")
