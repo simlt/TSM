@@ -62,11 +62,26 @@ local function GetProfessionInfo(id)
 		return nil
 	end
 	if profession == nil then
-    return nil
-  end
+		return nil
+	end
 	return profession.name, nil, profession.skillRank, profession.skillMaxRank
 end
 
+-- Helper function to find spellID associated to spellname
+local function GetTradeSkillSpellID(spellName)
+	-- GetTradeSkillRecipeLink ONLY works when a trade skill window is open, but this should always happen
+	for i = 1,GetNumTradeSkills() do
+		local link = GetTradeSkillRecipeLink(i)
+		if link and link:match(spellName) then -- Not a header and spell name found
+			local spellID = tonumber(link:match("enchant:(%d+)"))
+			if spellID then
+				-- print(spellID, spellName, link)
+				return spellID
+			end
+		end
+	end
+	return nil
+end
 
 function GUI:OnEnable()
 	GUI:RegisterEvent("TRADE_SKILL_SHOW", "ShowProfessionWindow")
@@ -236,7 +251,13 @@ function GUI:EventHandler(event, ...)
 			TSM.db.factionrealm.tradeSkills[UnitName("player")][skillName].maxLevel = maxLevel
 		end
 	elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
-		local unit, _, _, _, spellID = ...
+		-- parameter ... doesn't provide spellID in 3.3.5a, use spellName instead
+		-- local unit, _, _, _, spellID = ...
+		local unit, spellName = ...
+		local spellID = GetTradeSkillSpellID(spellName)
+		if spellID == nil then
+			TSM:Printf("Could not find spellID for %s", spellName)
+		end
 		local craft = spellID and TSM.db.factionrealm.crafts[spellID]
 		if unit ~= "player" or not craft then return end
 
@@ -250,7 +271,13 @@ function GUI:EventHandler(event, ...)
 		end
 		TSMAPI:CreateTimeDelay("craftingQueueUpdateThrottle", 0.2, GUI.UpdateQueue)
 	elseif event == "UNIT_SPELLCAST_INTERRUPTED" or event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_FAILED_QUIET" then
-		local unit, _, _, _, spellID = ...
+		-- parameter ... doesn't provide spellID in 3.3.5a, use spellName instead
+		-- local unit, _, _, _, spellID = ...
+		local unit, spellName = ...
+		local spellID = GetTradeSkillSpellID(spellName)
+		if spellID == nil then
+			TSM:Printf("Could not find spellID for %s", spellName)
+		end
 		if unit ~= "player" then return end
 
 		if GUI.isCrafting and spellID == GUI.isCrafting.spellID then
@@ -919,14 +946,14 @@ function GUI:CreateProfessionsTab(parent)
 	btn:SetText("SubClass >>")
 	btn:SetScript("OnClick", function(self) ToggleDropDownMenu(1, nil, TradeSkillSubClassDropDown, "TSMCraftingFilter2Button", btn:GetWidth()-15, 0) end)
 	frame.filterBtn = btn
-	
+
 	local btn = TSMAPI.GUI:CreateButton(frame, 14, "TSMCraftingFilter2Button")
-  btn:SetPoint("TOPLEFT", frame.filterBtn, "TOPRIGHT", 5, 0)
-  btn:SetPoint("TOPRIGHT", -5, -35)
-  btn:SetHeight(24)
-  btn:SetText("InvSlot >>")
-  btn:SetScript("OnClick", function(self) ToggleDropDownMenu(1, nil, TradeSkillInvSlotDropDown, "TSMCraftingFilter2Button", btn:GetWidth(), 0) end)
-  frame.filter2Btn = btn
+	btn:SetPoint("TOPLEFT", frame.filterBtn, "TOPRIGHT", 5, 0)
+	btn:SetPoint("TOPRIGHT", -5, -35)
+	btn:SetHeight(24)
+	btn:SetText("InvSlot >>")
+	btn:SetScript("OnClick", function(self) ToggleDropDownMenu(1, nil, TradeSkillInvSlotDropDown, "TSMCraftingFilter2Button", btn:GetWidth(), 0) end)
+	frame.filter2Btn = btn
 
 	TSMAPI.GUI:CreateHorizontalLine(frame, -64)
 
@@ -1404,7 +1431,7 @@ function GUI:UpdateProfessionsTabST()
 				ts = "  "
 			end
 			if skillType == "header" or skillType == "subheader" then
-					skillName = skillName .. (isExpanded and " [-]" or " [+]")
+				skillName = skillName .. (isExpanded and " [-]" or " [+]")
 			end
 
 			if not numAvailableAllCache[spellID] then
